@@ -187,6 +187,3 @@ If you want to learn more about orbital mechanics:
 
 MIT License - use it however you want, just don't blame me if something breaks.
 
-## Contact
-Hamoud Alshammari  
-[GitHub](https://github.com/OrbitAR7) | [LinkedIn](https://www.linkedin.com/in/hamoud-alshammari-7415b617a/)
