@@ -31,6 +31,9 @@ if(BUILD_EXAMPLES)
 
     add_executable(sunsync_orbit examples/sunsync_orbit.cpp)
     target_link_libraries(sunsync_orbit PRIVATE orbit_propagator)
+
+    add_executable(validation examples/validation.cpp)
+    target_link_libraries(validation PRIVATE orbit_propagator)
 endif()
 
 # Installation
