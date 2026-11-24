@@ -36,6 +36,23 @@ if(BUILD_EXAMPLES)
     target_link_libraries(validation PRIVATE orbit_propagator)
 endif()
 
+# Tests
+option(BUILD_TESTS "Build tests" ON)
+if(BUILD_TESTS)
+    enable_testing()
+    add_executable(test_propagator tests/test_propagator.cpp)
+    target_link_libraries(test_propagator PRIVATE orbit_propagator)
+    add_test(NAME PropagatorTests COMMAND test_propagator)
+
+    # The examples should also run to completion. They write CSV files, so run
+    # them inside the build directory.
+    if(BUILD_EXAMPLES)
+        foreach(ex iss_propagation sunsync_orbit validation)
+            add_test(NAME ${ex} COMMAND ${ex} WORKING_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR})
+        endforeach()
+    endif()
+endif()
+
 # Installation
 include(GNUInstallDirs)
 install(TARGETS orbit_propagator

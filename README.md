@@ -1,5 +1,7 @@
 # orbit-propagator-cpp
 
+[![CI](https://github.com/OrbitAR7/orbit-propagator-cpp/actions/workflows/CI.yml/badge.svg)](https://github.com/OrbitAR7/orbit-propagator-cpp/actions/workflows/CI.yml)
+
 A header-only C++17 orbit propagator: two-body gravity plus the J2 zonal harmonic, integrated with fixed-step RK4. It includes Keplerian ↔ Cartesian conversion and CSV export. It is checked against analytic results (see [Validation](#validation)).
 
 ## Quick example
@@ -33,6 +35,7 @@ cmake -S . -B build && cmake --build build
 ./build/iss_propagation      # ISS-like orbit with and without J2
 ./build/sunsync_orbit        # sun-synchronous inclination design
 ./build/validation           # checks below
+ctest --test-dir build --output-on-failure
 ```
 
 Or copy `include/orbit_propagator.hpp` into your project. It has no dependencies beyond the standard library.
@@ -47,6 +50,21 @@ Or copy `include/orbit_propagator.hpp` into your project. It has no dependencies
 | J2: RAAN drift over one day vs. analytic secular rate −1.5 n J2 (Re/p)² cos i | 0.9874° numeric vs. 0.9859° analytic (sun-synchronous target 0.9856°/day) |
 
 The small J2 difference is expected: the numerical result includes short-period J2 oscillations that the secular formula averages out. For an ISS-like orbit, `iss_propagation` shows about 1,100 km position difference after one day between two-body and two-body + J2, and a nodal drift of about −5.0°/day.
+
+### Tests
+
+`tests/test_propagator.cpp` runs with `ctest` and in CI on Ubuntu and macOS. It checks:
+
+| Check | Measured | Pass if |
+|---|---|---|
+| Keplerian → Cartesian: radius, energy −μ/2a, angular momentum, inclination | relative errors ~1e-16 | < 1e-13 |
+| Two-body closure after 10 periods (10 s step) | 0.21 m | < 1 m |
+| Two-body energy and angular momentum drift over 10 periods | 2e-10 | < 1e-9 |
+| RK4 order of convergence (800 vs 1600 steps per orbit) | 4.18 | 4 ± 0.3 |
+| J2: energy (with the J2 potential) and h_z drift over 1 day | 3e-10 | < 1e-9 |
+| J2: RAAN drift over 1 day vs secular rate | 0.15% | < 1% |
+
+The J2 energy check uses the full potential. Without the J2 term the energy changes by 1e-3 over the day, so the check would catch a sign or factor error in the J2 acceleration. ctest also runs the three examples to make sure they finish.
 
 ## Examples
 
